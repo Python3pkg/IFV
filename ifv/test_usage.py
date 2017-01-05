@@ -68,7 +68,16 @@ class TestBaseAPIItem(unittest.TestCase):
             self.assertIs(parent_item, child_item2._parent_item)
             self.assertEqual(child_item2["name"], "child_item2")
 
-    def test_call(self):
+    @mock.patch(
+        "ifv.BaseAPIItem.IGNORE_ERROR_TYPE",
+        new_callable=mock.PropertyMock,
+        return_value=[IndexError],
+    )
+    @mock.patch(
+        "ifv.BaseAPIItem._handle_request_error",
+        return_value=None,
+    )
+    def test_call(self, handle_request_error, IGNORE_ERROR_TYPE):
         parent_item = ifv.BaseAPIItem()
         with mock.patch(
             "ifv.BaseAPIItem._get_response_result",
@@ -76,6 +85,20 @@ class TestBaseAPIItem(unittest.TestCase):
         ):
             result = parent_item.item.get(value=1)
             self.assertEqual(result, {"value": 1})
+
+        with mock.patch(
+            "ifv.BaseAPIItem._get_response_result",
+            side_effect=ValueError,
+        ):
+            with self.assertRaises(ValueError):
+                parent_item.item.get(value=1)
+
+        with mock.patch(
+            "ifv.BaseAPIItem._get_response_result",
+            side_effect=IndexError,
+        ):
+            result = parent_item.item.get(value=1)
+            self.assertEqual(result, None)
 
 
 if __name__ == '__main__':

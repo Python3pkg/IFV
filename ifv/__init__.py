@@ -7,19 +7,18 @@ logger = logging.getLogger(__name__)
 
 
 class BaseAPIItem(object):
-    BASE_CONTEXT = {}
     IGNORE_ERROR_TYPE = set([KeyboardInterrupt])
 
     def __init__(self, parent_item=None, **kwargs):
-        self._context = self.BASE_CONTEXT.copy()
-        self._context.update(kwargs)
+        self._context = kwargs
         self._parent_item = parent_item
 
     def _copy(self):
         return BaseAPIItem(self._parent_item, **self._context)
 
     def _is_ignore_request_error(self, error):
-        if type(error) in self.IGNORE_ERROR_TYPE:
+        error_type = type(error) if isinstance(error, Exception) else error
+        if error_type in self.IGNORE_ERROR_TYPE:
             return True
         return False
 
