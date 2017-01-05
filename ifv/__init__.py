@@ -9,12 +9,16 @@ logger = logging.getLogger(__name__)
 class BaseAPIItem(object):
     IGNORE_ERROR_TYPE = set([KeyboardInterrupt])
 
+    @classmethod
+    def _new(cls, parent_item=None, **context):
+        return cls(parent_item, **context)
+
     def __init__(self, parent_item=None, **kwargs):
         self._context = kwargs
         self._parent_item = parent_item
 
     def _copy(self):
-        return BaseAPIItem(self._parent_item, **self._context)
+        return self._new(self._parent_item, **self._context)
 
     def _is_ignore_request_error(self, error):
         error_type = type(error) if isinstance(error, Exception) else error
@@ -41,7 +45,7 @@ class BaseAPIItem(object):
 
     def __getattr__(self, name):
         context = self._get_subitem_context(name) or {}
-        return BaseAPIItem(self, **context)
+        return self._new(self, **context)
 
     def __getitem__(self, key):
         try:

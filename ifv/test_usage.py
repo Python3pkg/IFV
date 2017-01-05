@@ -15,6 +15,9 @@ class TestBaseAPIItem(unittest.TestCase):
         self.assertEqual(context["name"], "test")
         self.assertEqual(context["value"], 1)
 
+        context = ifv.BaseAPIItem._new(value=2)
+        self.assertEqual(context["value"], 2)
+
     def test_merged_context(self):
         parent_item = ifv.BaseAPIItem(name="parent", value=1)
         child_item = ifv.BaseAPIItem(parent_item, name="child")
