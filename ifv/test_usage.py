@@ -24,6 +24,7 @@ class TestBaseAPIItem(unittest.TestCase):
         self.assertDictEqual(child_item._merged_context, {
             "name": "child", "value": 1,
         })
+        self.assertSetEqual(set(child_item), set(["name", "value"]))
 
     def test_parent_item(self):
         parent_item = ifv.BaseAPIItem(name="parent", value=1)
