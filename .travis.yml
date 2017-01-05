@@ -1,0 +1,17 @@
+language: python
+sudo: true
+env:
+    - SRCPATH=./ifv PYTHONPATH=.
+python:
+    - 2.7
+    - 3.3
+    - 3.4
+    - 3.5
+    - pypy
+install:
+    - pip install -r requirements-dev.txt
+    - pip install codecov pytest-cov
+script:
+    - py.test -v --cov=./ $(SRCPATH)
+after_success:
+    - codecov
