@@ -7,15 +7,24 @@ logger = logging.getLogger(__name__)
 
 
 class BaseAPIItem(object):
+    BASE_CONTEXT = {}
     IGNORE_ERROR_TYPE = set([KeyboardInterrupt])
 
     @classmethod
-    def _new(cls, parent_item=None, **context):
-        return cls(parent_item, **context)
+    def _new(cls, parent_item=None, *args, **context):
+        return cls(parent_item, *args, **context)
 
-    def __init__(self, parent_item=None, **kwargs):
-        self._context = kwargs
+    def __init__(self, parent_item=None, *args, **kwargs):
         self._parent_item = parent_item
+        self._context = kwargs
+
+        if not parent_item:
+            self._init_root(*args)
+
+    def _init_root(self, *args):
+        context = self.BASE_CONTEXT.copy()
+        context.update(self._context)
+        self._context = context
 
     def _copy(self):
         return self._new(self._parent_item, **self._context)

@@ -18,6 +18,19 @@ class TestBaseAPIItem(unittest.TestCase):
         context = ifv.BaseAPIItem._new(value=2)
         self.assertEqual(context["value"], 2)
 
+        with mock.patch(
+            "ifv.BaseAPIItem.BASE_CONTEXT",
+            new_callable=mock.PropertyMock,
+            return_value={"name": "root"},
+        ):
+            context = ifv.BaseAPIItem()
+            self.assertEqual(context["name"], "root")
+            self.assertIsNot(context._context, context.BASE_CONTEXT)
+
+            context = ifv.BaseAPIItem(name="test")
+            self.assertEqual(context["name"], "test")
+            self.assertIsNot(context._context, context.BASE_CONTEXT)
+
     def test_merged_context(self):
         parent_item = ifv.BaseAPIItem(name="parent", value=1)
         child_item = ifv.BaseAPIItem(parent_item, name="child")
