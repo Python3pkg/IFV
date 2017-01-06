@@ -34,10 +34,10 @@ class TestBaseAPIItem(unittest.TestCase):
     def test_merged_context(self):
         parent_item = ifv.BaseAPIItem(name="parent", value=1)
         child_item = ifv.BaseAPIItem(parent_item, name="child")
-        self.assertDictEqual(parent_item._merged_context, {
+        self.assertDictContainsSubset(parent_item._merged_context, {
             "name": "parent", "value": 1,
         })
-        self.assertDictEqual(child_item._merged_context, {
+        self.assertDictContainsSubset(child_item._merged_context, {
             "name": "child", "value": 1,
         })
         self.assertSetEqual(set(child_item), set(["name", "value"]))
@@ -73,7 +73,13 @@ class TestBaseAPIItem(unittest.TestCase):
         parent_item = ifv.BaseAPIItem(name="parent", value=1)
         child_item = parent_item.child_item
         self.assertIs(parent_item, child_item._parent_item)
-        self.assertDictEqual(
+        self.assertDictContainsSubset(
+            parent_item._merged_context, child_item._merged_context,
+        )
+
+        child_item = parent_item._get_subitem("child_item")
+        self.assertIs(parent_item, child_item._parent_item)
+        self.assertDictContainsSubset(
             parent_item._merged_context, child_item._merged_context,
         )
 
@@ -117,6 +123,26 @@ class TestBaseAPIItem(unittest.TestCase):
             result = parent_item.item.get(value=1)
             self.assertEqual(result, None)
 
+    def test_get_item_list(self):
+        parent_item = ifv.BaseAPIItem(item_name="parent", value=1)
+        child_item = parent_item.child
+
+        self.assertListEqual(
+            child_item._get_item_list("item_name"),
+            ["parent", "child"],
+        )
+        self.assertListEqual(
+            child_item._get_item_list("item_name", strict=False),
+            ["parent", "child"],
+        )
+        self.assertListEqual(
+            child_item._get_item_list("value", strict=True),
+            [1],
+        )
+        self.assertListEqual(
+            child_item._get_item_list("value"),
+            [1, None],
+        )
 
 if __name__ == '__main__':
     unittest.main()

@@ -6,6 +6,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class APIItemError(Exception):
+    pass
+
+
 class BaseAPIItem(object):
     BASE_CONTEXT = {}
     IGNORE_ERROR_TYPE = set([KeyboardInterrupt])
@@ -52,9 +56,24 @@ class BaseAPIItem(object):
         context.update(self._context)
         return context
 
-    def __getattr__(self, name):
+    def _get_subitem(self, name):
         context = self._get_subitem_context(name) or {}
+        context.setdefault("item_name", name)
         return self._new(self, **context)
+
+    def _get_item_list(self, key, strict=False):
+        items = []
+        item = self
+        while item:
+            if key in item._context:
+                items.insert(0, item._context[key])
+            elif not strict:
+                items.insert(0, None)
+            item = item._parent_item
+        return items
+
+    def __getattr__(self, name):
+        return self._get_subitem(name)
 
     def __getitem__(self, key):
         try:
