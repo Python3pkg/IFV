@@ -7,6 +7,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def not_implemented_function(*arguements):
+    def wrapper(*args, **kwargs):
+        raise NotImplementedError()
+    return wrapper
+
+
 class BaseAPIItem(object):
 
     def __init__(self, name):
@@ -23,16 +29,16 @@ class BaseAPIItem(object):
 
 class BaseAPI(BaseAPIItem):
     BASE_CONTEXT = {}
+    API_NAME = ""
 
     def __init__(self, *args, **kwargs):
-        super(BaseAPI, self).__init__("")
+        super(BaseAPI, self).__init__(self.API_NAME)
         self._context = copy.deepcopy(self.BASE_CONTEXT)
 
     def __getattr__(self, name):
         return self._get_subitem(APIPath, name, self)
 
-    def __call__(self, api_path, *args, **kwargs):
-        raise NotImplementedError()
+    __call__ = not_implemented_function("api_path", "*args", "**kwargs")
 
 
 class APIPath(BaseAPIItem):
@@ -60,3 +66,23 @@ class APIPath(BaseAPIItem):
 
     def __call__(self, *args, **kwargs):
         return self._root(self, *args, **kwargs)
+
+
+class HTTPAPI(BaseAPI):
+
+    def __init__(self, url):
+        super(HTTPAPI, self).__init__()
+        self._url = url
+
+    _get_url = not_implemented_function("api_path")
+    _get_method = not_implemented_function("api_path")
+    _get_request = not_implemented_function(
+        "url", "mehtod", "*args", "**kwargs"
+    )
+    _get_request_result = not_implemented_function("request")
+
+    def __call__(self, api_path, *args, **kwargs):
+        url = self._get_url(self, api_path._path)
+        method = self._get_method(self, api_path)
+        request = self._get_request(url, method, *args, **kwargs)
+        return self._get_request_result(request)

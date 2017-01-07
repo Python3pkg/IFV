@@ -8,6 +8,14 @@ import mock
 import ifv
 
 
+class TestNotImplementedFunction(unittest.TestCase):
+
+    def test_call(self):
+        func = ifv.not_implemented_function("arg1", "arg2")
+        with self.assertRaises(NotImplementedError):
+            func(1, 2)
+
+
 class TestBaseAPIItem(unittest.TestCase):
 
     def test_construction(self):
@@ -60,3 +68,11 @@ class TestAPIPath(unittest.TestCase):
     def test_path(self):
         item = ifv.APIPath("test", self.root)
         self.assertTupleEqual(item.subitem._path, ("test", "subitem"))
+
+
+class TestHTTPAPI(unittest.TestCase):
+
+    def test_usage(self):
+        api = ifv.HTTPAPI("http://your.dom.in/api")
+        with self.assertRaises(NotImplementedError):
+            api.services.monitor.create(host="127.0.0.1")
