@@ -44,11 +44,6 @@ class TestBaseAPI(unittest.TestCase):
         item2 = ifv.BaseAPI()
         self.assertIsNot(item._context, item2._context)
 
-    def test_call(self):
-        item = ifv.BaseAPI()
-        with self.assertRaises(NotImplementedError):
-            item(None)
-
 
 class TestAPIPath(unittest.TestCase):
 
@@ -70,9 +65,9 @@ class TestAPIPath(unittest.TestCase):
         self.assertTupleEqual(item.subitem._path, ("test", "subitem"))
 
 
-class TestHTTPAPI(unittest.TestCase):
+class TestBaseHTTPAPI(unittest.TestCase):
 
     def test_usage(self):
-        api = ifv.HTTPAPI("http://your.dom.in/api")
+        api = ifv.BaseHTTPAPI("http://your.dom.in/api")
         with self.assertRaises(NotImplementedError):
             api.services.monitor.create(host="127.0.0.1")

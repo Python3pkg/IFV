@@ -36,9 +36,9 @@ class BaseAPI(BaseAPIItem):
         self._context = copy.deepcopy(self.BASE_CONTEXT)
 
     def __getattr__(self, name):
-        return self._get_subitem(APIPath, name, self)
-
-    __call__ = not_implemented_function("api_path", "*args", "**kwargs")
+        return self._get_subitem(
+            APIPath, name, self,
+        )
 
 
 class APIPath(BaseAPIItem):
@@ -49,6 +49,11 @@ class APIPath(BaseAPIItem):
         self._root = root
         self.__path = None
 
+    def __getattr__(self, name):
+        return self._get_subitem(
+            self.__class__, name, self._root, self,
+        )
+
     @property
     def _path(self):
         if self.__path is None:
@@ -58,31 +63,25 @@ class APIPath(BaseAPIItem):
                 self.__path = (self._name,)
         return self.__path
 
-    def __getattr__(self, name):
-        return self._get_subitem(
-            self.__class__, name,
-            self._root, self,
-        )
-
     def __call__(self, *args, **kwargs):
         return self._root(self, *args, **kwargs)
 
 
-class HTTPAPI(BaseAPI):
+class BaseHTTPAPI(BaseAPI):
 
     def __init__(self, url):
-        super(HTTPAPI, self).__init__()
+        super(BaseHTTPAPI, self).__init__()
         self._url = url
 
-    _get_url = not_implemented_function("api_path")
-    _get_method = not_implemented_function("api_path")
     _get_request = not_implemented_function(
         "url", "mehtod", "*args", "**kwargs"
     )
     _get_request_result = not_implemented_function("request")
+    _get_url = not_implemented_function("api_path")
+    _get_method = not_implemented_function("api_path")
 
     def __call__(self, api_path, *args, **kwargs):
-        url = self._get_url(self, api_path._path)
-        method = self._get_method(self, api_path)
+        url = self._get_url(api_path)
+        method = self._get_method(api_path)
         request = self._get_request(url, method, *args, **kwargs)
         return self._get_request_result(request)
