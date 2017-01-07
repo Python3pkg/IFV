@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import copy
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class BaseAPI(BaseAPIItem):
 
     def __init__(self, *args, **kwargs):
         super(BaseAPI, self).__init__("")
-        self._context = self.BASE_CONTEXT.copy()
+        self._context = copy.deepcopy(self.BASE_CONTEXT)
 
     def __getattr__(self, name):
         return self._get_subitem(APIPath, name, self)

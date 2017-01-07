@@ -32,7 +32,9 @@ class TestBaseAPI(unittest.TestCase):
         item = ifv.BaseAPI()
         self.assertIs(item.subitem, item.subitem)
         self.assertEqual(item.subitem._name, "subitem")
-        self.assertDictEqual(item._context, {})
+
+        item2 = ifv.BaseAPI()
+        self.assertIsNot(item._context, item2._context)
 
     def test_call(self):
         item = ifv.BaseAPI()
