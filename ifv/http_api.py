@@ -1,7 +1,11 @@
 # coding: utf-8
 
 import logging
-import urlparse
+
+try:
+    from urlparse import urljoin
+except ImportError:
+    from urllib.parse import urljoin
 
 import requests
 
@@ -65,7 +69,7 @@ class SimpleHTTPAPI(BaseHTTPAPI):
 
         url_paths = api_path._path[:-1]
         method_paths = api_path._path[-1:]
-        url = urlparse.urljoin(self._url, "/".join(url_paths))
+        url = urljoin(self._url, "/".join(url_paths))
 
         if not method_paths:
             method = self.DEFAULT_METHOD

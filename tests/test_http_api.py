@@ -51,3 +51,16 @@ class TestSimpleHTTPAPI(unittest.TestCase):
                 "method": "POST",
                 "value": 1,
             })
+
+        with mock.patch(
+            "requests.Session.request", side_effect=NotImplementedError,
+        ):
+            with self.assertRaises(NotImplementedError):
+                result = self.api.path.to.st.post(value=1)
+
+            with mock.patch(
+                "ifv.http_api.SimpleHTTPAPI._on_request_error",
+                side_effect=lambda *a, **k: (id(self), True),
+            ):
+                result = self.api.path.to.st.post(value=1)
+                self.assertEqual(result, id(self))
