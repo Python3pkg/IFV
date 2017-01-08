@@ -27,7 +27,7 @@ setup(
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
     ],
-    keywords="api client framework",
+    keywords=["api", "client", "framework"],
     extras_require={
         "extend": ["requests>=2.7.0"],
     },
