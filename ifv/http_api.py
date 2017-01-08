@@ -71,10 +71,8 @@ class SimpleHTTPAPI(BaseHTTPAPI):
         method_paths = api_path._path[-1:]
         url = urljoin(self._url, "/".join(url_paths))
 
-        if not method_paths:
-            method = self.DEFAULT_METHOD
         method_name = method_paths[0]
-        method = self.METHOD_MAP.get(method_name)
+        method = self.METHOD_MAP.get(method_paths[0])
         if method is None:
             raise NotAllowMethod(method_name)
         return url, method
