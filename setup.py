@@ -5,7 +5,7 @@ from setuptools import setup
 setup(
     name="ifv",
     packages=["ifv"],
-    version="0.1.0",
+    version="0.1.1",
     description="a simple common api client framework",
     url="https://github.com/MrLYC/IFV",
     author="MrLYC",
