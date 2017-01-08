@@ -63,11 +63,3 @@ class TestAPIPath(unittest.TestCase):
     def test_path(self):
         item = ifv.APIPath("test", self.root)
         self.assertTupleEqual(item.subitem._path, ("test", "subitem"))
-
-
-class TestBaseHTTPAPI(unittest.TestCase):
-
-    def test_usage(self):
-        api = ifv.BaseHTTPAPI("http://your.dom.in/api")
-        with self.assertRaises(NotImplementedError):
-            api.services.monitor.create(host="127.0.0.1")
