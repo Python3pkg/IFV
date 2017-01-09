@@ -36,9 +36,11 @@ class BaseAPI(BaseAPIItem):
         self._context = copy.deepcopy(self.BASE_CONTEXT)
 
     def __getattr__(self, name):
-        return self._get_subitem(
-            APIPath, name, self,
-        )
+        if not name.startswith("_"):
+            return self._get_subitem(
+                APIPath, name, self,
+            )
+        return super(BaseAPI, self).__getattr__(name)
 
 
 class APIPath(BaseAPIItem):
@@ -50,9 +52,11 @@ class APIPath(BaseAPIItem):
         self.__path = None
 
     def __getattr__(self, name):
-        return self._get_subitem(
-            self.__class__, name, self._root, self,
-        )
+        if not name.startswith("_"):
+            return self._get_subitem(
+                self.__class__, name, self._root, self,
+            )
+        return super(APIPath, self).__getattr__(name)
 
     @property
     def _path(self):

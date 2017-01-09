@@ -40,6 +40,8 @@ class TestBaseAPI(unittest.TestCase):
         item = ifv.BaseAPI()
         self.assertIs(item.subitem, item.subitem)
         self.assertEqual(item.subitem._name, "subitem")
+        with self.assertRaises(AttributeError):
+            item._subitem
 
         item2 = ifv.BaseAPI()
         self.assertIsNot(item._context, item2._context)
@@ -59,6 +61,8 @@ class TestAPIPath(unittest.TestCase):
     def test_subitem(self):
         item = ifv.APIPath("test", self.root)
         self.assertIs(item.subitem, item.subitem)
+        with self.assertRaises(AttributeError):
+            item._subitem
 
     def test_path(self):
         item = ifv.APIPath("test", self.root)
