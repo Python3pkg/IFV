@@ -40,7 +40,7 @@ class BaseAPI(BaseAPIItem):
             return self._get_subitem(
                 APIPath, name, self,
             )
-        return super(BaseAPI, self).__getattr__(name)
+        raise AttributeError(name)
 
 
 class APIPath(BaseAPIItem):
@@ -56,7 +56,7 @@ class APIPath(BaseAPIItem):
             return self._get_subitem(
                 self.__class__, name, self._root, self,
             )
-        return super(APIPath, self).__getattr__(name)
+        raise AttributeError(name)
 
     @property
     def _path(self):
