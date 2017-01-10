@@ -58,9 +58,12 @@ class SimpleHTTPAPI(BaseHTTPAPI):
         handled = False
         return result, handled
 
-    def _get_request(self, url, method, **kwargs):
+    def _get_request(self, url, method, headers=(), **kwargs):
         kwargs["url"] = url
         kwargs["method"] = method
+        request_headers = self._headers.copy()
+        request_headers.update(headers)
+        kwargs["headers"] = request_headers
         return kwargs
 
     def _get_url_and_method(self, api_path=None):

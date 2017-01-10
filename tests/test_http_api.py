@@ -46,11 +46,11 @@ class TestSimpleHTTPAPI(unittest.TestCase):
             "requests.Session.request", side_effect=lambda **k: k,
         ):
             result = self.api.path.to.st.post(value=1)
-            self.assertDictContainsSubset(result, {
+            self.assertDictContainsSubset({
                 "url": "http://your.dom.in/path/to/st",
                 "method": "POST",
                 "value": 1,
-            })
+            }, result)
 
         with mock.patch(
             "requests.Session.request", side_effect=NotImplementedError,
@@ -64,3 +64,34 @@ class TestSimpleHTTPAPI(unittest.TestCase):
             ):
                 result = self.api.path.to.st.post(value=1)
                 self.assertEqual(result, id(self))
+
+    @mock.patch(
+        "ifv.http_api.SimpleHTTPAPI._get_result_from_response",
+        side_effect=lambda r: r,
+    )
+    def test_set_headers(self, _get_result_from_response):
+        with mock.patch(
+            "requests.Session.request", side_effect=lambda **k: k,
+        ):
+            result = self.api.path.to.st.post(headers={
+                "name": "test",
+            })
+            self.assertDictContainsSubset({
+                "headers": {"name": "test"},
+            }, result)
+
+            self.api._headers["value"] = "hello"
+            result = self.api.path.to.st.post()
+            self.assertDictContainsSubset({
+                "headers": {"value": "hello"},
+            }, result)
+
+            result = self.api.path.to.st.post(headers={
+                "name": "test",
+            })
+            self.assertDictContainsSubset({
+                "headers": {
+                    "name": "test",
+                    "value": "hello",
+                },
+            }, result)
